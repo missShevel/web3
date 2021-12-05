@@ -1,21 +1,20 @@
 <script>
-  import requestRunner from "./requests/requests-runner";
-  import { OperationsDocsHelper } from "./requests/operation-docs-helper";
-  import { ApolloClient, InMemoryCache, HttpLink } from "@apollo/client";
-  import { setClient, subscribe } from "svelte-apollo";
-  import { WebSocketLink } from "@apollo/client/link/ws";
+  import requestRunner from './requests/requests-runner';
+  import { OperationsDocsHelper } from './requests/operation-docs-helper';
+  import { ApolloClient, InMemoryCache } from '@apollo/client';
+  import { setClient, subscribe } from 'svelte-apollo';
+  import { WebSocketLink } from '@apollo/client/link/ws';
 
-  function createApolloClient(authToken) {
+  function createApolloClient() {
     const wsLink = new WebSocketLink({
-      uri: "wss://weblab-3.herokuapp.com/v1/graphql",
+      uri: 'wss://weblab-3.herokuapp.com/v1/graphql',
     });
 
     const cache = new InMemoryCache();
-    const client = new ApolloClient({
+    return new ApolloClient({
       link: wsLink,
       cache,
     });
-    return client;
   }
 
   const client = createApolloClient();
@@ -26,30 +25,28 @@
   const notes = subscribe(OperationsDocsHelper.SUBSCRIPTION_AllNotes);
 
   const addNote = async () => {
-    const title = prompt("Note title") ?? "";
-    const status = prompt("Task status") ?? "";
-    if (title === "") return;
+    const title = prompt('Note title') ?? '';
+    const status = prompt('Task status') ?? '';
+    if (title === '') return;
     await requestRunner.startExecuteMyMutation(
-      OperationsDocsHelper.MUTATION_InsertOne(title, status)
+      OperationsDocsHelper.MUTATION_InsertOne(title, status),
     );
   };
 
   const deleteNote = async () => {
-    const noteNumber = prompt("Notes' number to be deleted: " ?? "");
+    const noteNumber = prompt("Notes' number to be deleted: " ?? '');
     await requestRunner.startExecuteMyMutation(
       OperationsDocsHelper.MUTATION_DeleteByNumber(),
       {
         number: parseInt(noteNumber),
-      }
+      },
     );
   };
 
   function dateDisplay(d) {
-    var datePart = d.substr(0, d.indexOf("T"));
-    var timePart = d.substr(d.indexOf("T") + 1, 5);
-    var result = datePart + " " + timePart;
-
-    return result;
+    var datePart = d.substr(0, d.indexOf('T'));
+    var timePart = d.substr(d.indexOf('T') + 1, 5);
+    return datePart + ' ' + timePart;
   }
 </script>
 
@@ -97,7 +94,7 @@
 </main>
 
 <style>
-  @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap");
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
 
   .limiter {
     width: 100%;
@@ -141,7 +138,7 @@
 
   .btn {
     padding: 10px 10px;
-    font-family: "Poppins";
+    font-family: Poppins;
     font-size: 15px;
     color: #ffffff;
     margin: 10px;
@@ -180,7 +177,7 @@
     }
 
     .row .cell:before {
-      font-family: "Poppins", sans-serif;
+      font-family: Poppins, sans-serif;
       font-size: 12px;
       color: #808080;
       line-height: 1.2;
@@ -205,7 +202,7 @@
   }
 
   .row .cell {
-    font-family: "Poppins", sans-serif;
+    font-family: Poppins, sans-serif;
     color: #666666;
     line-height: 1.2;
     font-weight: unset !important;
@@ -216,7 +213,7 @@
   }
 
   .row.header .cell {
-    font-family: "Poppins", sans-serif;
+    font-family: Poppins, sans-serif;
     font-size: 18px;
     color: #fff;
     line-height: 1.2;
@@ -262,28 +259,25 @@
       margin: 0;
     }
 
+    .table,
+    .row,
+    .cell {
+      width: 100% !important;
+    }
     .row .cell {
       border: none;
       padding-left: 30px;
       padding-top: 16px;
       padding-bottom: 16px;
-    }
-    .row .cell:nth-child(1) {
-      padding-left: 30px;
-    }
-
-    .row .cell {
-      font-family: "Poppins", sans-serif;
+      font-family: Poppins, sans-serif;
       font-size: 18px;
       color: #555555;
       line-height: 1.2;
       font-weight: unset !important;
     }
 
-    .table,
-    .row,
-    .cell {
-      width: 100% !important;
+    .row .cell:nth-child(1) {
+      padding-left: 30px;
     }
   }
 </style>

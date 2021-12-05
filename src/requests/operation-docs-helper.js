@@ -1,7 +1,7 @@
-import { gql } from "@apollo/client";
+import { gql } from '@apollo/client';
 export class OperationsDocsHelper {
-    static QUERY_GetAll = () => 
- `query MyQuery {
+  static QUERY_GetAll = () =>
+    `query MyQuery {
     notes_notes {
       creation_time
       deadline
@@ -13,7 +13,7 @@ export class OperationsDocsHelper {
     }
   }
 `;
-    static MUTATION_InsertOne = (title, status) => `mutation MyMutation {
+  static MUTATION_InsertOne = (title, status) => `mutation MyMutation {
         insert_notes_notes(objects: {note_title: "${title}", status: "${status}"}) {
           returning {
             id
@@ -28,7 +28,7 @@ export class OperationsDocsHelper {
       }
       `;
 
-      static MUTATION_DeleteByStatus = () => `
+  static MUTATION_DeleteByStatus = () => `
       mutation MyMutation($status:String) {
         delete_notes_notes(where: {status: {_eq: $status}}) {
           returning {
@@ -43,7 +43,7 @@ export class OperationsDocsHelper {
         }
       }`;
 
-      static MUTATION_DeleteByNumber =() => `
+  static MUTATION_DeleteByNumber = () => `
       mutation MyMutation($number:Int) {
         delete_notes_notes(where: {number: {_eq: $number}}) {
           returning {
@@ -57,15 +57,17 @@ export class OperationsDocsHelper {
       }
       `;
 
-      static SUBSCRIPTION_AllNotes = gql `subscription MySubscription {
-        notes_notes {
-          creation_time
-          deadline
-          id
-          note_details
-          note_title
-          status
-          number
-        }
-      }`
-} 
+  static SUBSCRIPTION_AllNotes = gql`
+    subscription MySubscription {
+      notes_notes {
+        creation_time
+        deadline
+        id
+        note_details
+        note_title
+        status
+        number
+      }
+    }
+  `;
+}
