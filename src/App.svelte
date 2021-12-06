@@ -7,7 +7,7 @@
 
   function createApolloClient() {
     const wsLink = new WebSocketLink({
-      uri: 'wss://weblab-3.herokuapp.com/v1/graphql',
+      uri: 'wss://weblaab-3.herokuapp.com/v1/graphql',
     });
 
     const cache = new InMemoryCache();

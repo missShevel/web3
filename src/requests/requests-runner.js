@@ -1,6 +1,6 @@
 class RequestRunner {
   constructor() {
-    this.API_URL = 'http://weblab-3.herokuapp.com/v1/graphql';
+    this.API_URL = 'https://weblaab-3.herokuapp.com/v1/graphql';
   }
   async fetchGraphQL(operationsDoc, operationName, variables) {
     const result = await fetch(this.API_URL, {
