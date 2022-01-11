@@ -14,7 +14,7 @@
   };
   function createApolloClient() {
     const wsLink = new WebSocketLink({
-      uri: 'wss://weblaab-3.herokuapp.com/v1/graphql',
+      uri: HASURA_URI,
     });
 
     const cache = new InMemoryCache();

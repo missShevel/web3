@@ -2,7 +2,7 @@ import { counter } from '../store';
 
 class RequestRunner {
   constructor() {
-    this.API_URL = 'https://weblaab-3.herokuapp.com/v1/graphql';
+    this.API_URL = HASURA_URL;
   }
   async fetchGraphQL(operationsDoc, operationName, variables) {
     try {
