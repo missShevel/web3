@@ -4,7 +4,14 @@
   import { ApolloClient, InMemoryCache } from '@apollo/client';
   import { setClient, subscribe } from 'svelte-apollo';
   import { WebSocketLink } from '@apollo/client/link/ws';
+  import { errors, counter } from '../src/store';
+  import dayjs from 'dayjs';
 
+  let online;
+  const inputValues = {
+    add: {},
+    delete: {},
+  };
   function createApolloClient() {
     const wsLink = new WebSocketLink({
       uri: 'wss://weblaab-3.herokuapp.com/v1/graphql',
@@ -25,36 +32,40 @@
   const notes = subscribe(OperationsDocsHelper.SUBSCRIPTION_AllNotes);
 
   const addNote = async () => {
-    const title = prompt('Note title') ?? '';
-    const status = prompt('Task status') ?? '';
-    if (title === '') return;
-    await requestRunner.startExecuteMyMutation(
-      OperationsDocsHelper.MUTATION_InsertOne(title, status),
-    );
+    const { title, status } = inputValues.add;
+    try {
+      if (!title || !status) return;
+      await requestRunner.startExecuteMyMutation(
+        OperationsDocsHelper.MUTATION_InsertOne(title, status),
+      );
+    } catch (e) {
+      console.error;
+      $errors = [e.message];
+    }
   };
 
   const deleteNote = async () => {
-    const noteNumber = prompt("Notes' number to be deleted: " ?? '');
-    await requestRunner.startExecuteMyMutation(
-      OperationsDocsHelper.MUTATION_DeleteByNumber(),
-      {
-        number: parseInt(noteNumber),
-      },
-    );
+    const { number } = inputValues.delete;
+    try {
+      await requestRunner.startExecuteMyMutation(
+        OperationsDocsHelper.MUTATION_DeleteByNumber(),
+        {
+          number: parseInt(number),
+        },
+      );
+    } catch (e) {
+      console.error;
+      $errors = [e.message];
+    }
   };
-
-  function dateDisplay(d) {
-    var datePart = d.substr(0, d.indexOf('T'));
-    var timePart = d.substr(d.indexOf('T') + 1, 5);
-    return datePart + ' ' + timePart;
-  }
 </script>
 
+<svelte:window bind:online />
 <main>
-  {#if $notes.loading}
+  {#if !online}
+    <h1>you r offline</h1>
+  {:else if $counter || $notes.loading}
     <div class="loader">loading ...</div>
-  {:else if $notes.error}
-    <div class="error">Error!</div>
   {:else if $notes.data}
     <div class="limiter">
       <div class="container-table100">
@@ -75,7 +86,7 @@
                   {note.note_title}
                 </div>
                 <div class="cell" data-title="Date">
-                  {dateDisplay(note.creation_time)}
+                  {dayjs(note.creation_time).format('YYYY-DD-MM HH:MM')}
                 </div>
                 <div class="cell" data-title="Status">
                   {note.status}
@@ -83,11 +94,29 @@
               </div>
             {/each}
           </div>
-          <div class="buttons">
+
+          <div class="props">
+            <h4>Add Note</h4>
+            <p>
+              If you want to add new note, please enter it's title and status
+            </p>
+            <input placeholder="Title" bind:value={inputValues.add.title} />
+            <input placeholder="Status" bind:value={inputValues.add.status} />
             <button class="btn" on:click={addNote}>Add Note</button>
+          </div>
+          <div class="props">
+            <h4>Delete Note</h4>
+            <p>If you want to delete note, please enter it's number</p>
+            <input
+              placeholder="Number"
+              bind:value={inputValues.delete.number}
+            />
             <button class="btn" on:click={deleteNote}>Delete</button>
           </div>
         </div>
+        {#if $errors.length || $notes.error}
+          <h2>{$errors[0]}</h2>
+        {/if}
       </div>
     </div>
   {/if}
@@ -99,6 +128,28 @@
   .limiter {
     width: 100%;
     margin: 0 auto;
+  }
+  h4 {
+    font-family: Poppins, sans-serif;
+    color: #494949;
+    margin: 5px 0;
+  }
+
+  p {
+    font-family: Poppins, sans-serif;
+    font-size: 16px;
+    color: #646464;
+    line-height: 1.2;
+    font-weight: unset !important;
+  }
+
+  input {
+    line-height: 2;
+    border-radius: 10px;
+    margin: 7px 0;
+    padding: 5px;
+    font-family: Poppins, sans-serif;
+    font-size: 16px;
   }
 
   .container-table100 {
@@ -129,11 +180,9 @@
     margin: 0;
   }
 
-  .buttons {
+  .props {
     line-height: 20px;
     margin: 15px;
-    display: flex;
-    justify-content: center;
   }
 
   .btn {
