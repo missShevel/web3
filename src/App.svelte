@@ -17,7 +17,19 @@
       uri: HASURA_URI,
     });
 
-    const cache = new InMemoryCache();
+    const cache = new InMemoryCache({
+      typePolicies: {
+        Subscription: {
+          fields: {
+            notes_notes: {
+              merge(existing, incoming) {
+                return incoming;
+              },
+            },
+          },
+        },
+      },
+    });
     return new ApolloClient({
       link: wsLink,
       cache,
@@ -26,8 +38,6 @@
 
   const client = createApolloClient();
   setClient(client);
-
-  requestRunner.startFetchMyQuery(OperationsDocsHelper.QUERY_GetAll());
 
   const notes = subscribe(OperationsDocsHelper.SUBSCRIPTION_AllNotes);
 
@@ -64,9 +74,12 @@
 <main>
   {#if !online}
     <h1>you r offline</h1>
-  {:else if $counter || $notes.loading}
-    <div class="loader">loading ...</div>
   {:else if $notes.data}
+    {#if $counter || $notes.loading}
+      <div class="loader">
+        <img src="/loader.gif" alt="loader" />
+      </div>
+    {/if}
     <div class="limiter">
       <div class="container-table100">
         <div class="wrap-table100">
@@ -150,6 +163,15 @@
     padding: 5px;
     font-family: Poppins, sans-serif;
     font-size: 16px;
+  }
+  .loader {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+  }
+  .loader img {
+    width: 100%;
+    height: 100%;
   }
 
   .container-table100 {

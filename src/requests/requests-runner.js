@@ -17,7 +17,8 @@ class RequestRunner {
       return result.json();
     } catch (e) {
       console.error(e);
-      throw new Error('Error with sending requesr occured');
+      counter.update((n) => n - 1);
+      throw new Error('Error with sending request occured');
     }
   }
   fetchMyQuery(operationsDoc) {
