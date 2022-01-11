@@ -15,6 +15,9 @@
   function createApolloClient() {
     const wsLink = new WebSocketLink({
       uri: HASURA_URI,
+      options: {
+        reconnect: true,
+      },
     });
 
     const cache = new InMemoryCache();
